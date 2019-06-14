@@ -1,7 +1,7 @@
 /**
  * @copyright Copyright='DESMG(www.desmg.com) All Rigths Reserved.'; QQ=773933146; Phone=18251554183; Producer=DESMG
  * @version 1.0.0
- * @file Router By DESMG.
+ * @file BlogRouter By DESMG.
  * @license GNU General Public License v3.0
  * @author DESMG
  */
@@ -20,12 +20,12 @@
         routers: {
             index: {
                 method: 'get',
-                templateUrl: '/index.html',
+                templateUrl: '/list.html',
             }
         }
     };
     _this.onEvent = function () {
-        let targetRouter = window.location.hash.split('!/')[1];
+        let targetRouter = window.location.hash.split('!')[1];
         let target, method, data;
         try {
             target = _this.config.routers[targetRouter].templateUrl;
@@ -50,7 +50,7 @@
             type: method,
             url: _this.config.protocol + _this.config.domain + ':' + _this.config.port + target,
             data: data,
-            dataType: 'json',
+            dataType: 'html',
             success: function (data) {
                 $(_this.config.view).html(data);
             }

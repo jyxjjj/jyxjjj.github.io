@@ -46,7 +46,7 @@
                 </div>
                 <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="/">主页</a></li>
+                        <li class="active"><a href="#!/">主页</a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">主题音乐&nbsp;<span class="caret"></span></a>
                             <ul class="dropdown-menu">
@@ -65,8 +65,8 @@
                                 <li><a href="#!/pages/contact.html">联系我们</a></li>
                                 <li><a href="#!/pages/donate.html">捐助我们</a></li>
                                 <li><a href="#!/pages/icp.html">备案信息</a></li>
-                                <li><a href="#!/pages/policies.html">隐私权政策</a></li>
-                                <li><a href="#!/pages/policies.html">知识产权政策</a></li>
+                                <li><a href="#!/pages/policies/privacy.html">隐私权政策</a></li>
+                                <li><a href="#!/pages/policies/ip.html">知识产权政策</a></li>
                                 <li><a href="#!/pages/agreement.html">服务协议</a></li>
                                 <li><a href="#!/pages/disclaimer.html">免责声明</a></li>
                             </ul>
@@ -81,20 +81,6 @@
             <section class="content-header">
             </section>
             <section class="content">
-                <div class="box box-primary">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">测试</h3>
-                        <span class="pull-right">神林 发布于 2019-04-03</span>
-                    </div>
-                    <div class="box-body">
-                        测试文字测试文字测试文字测试文字<br/>
-                    </div>
-                    <div class="box-footer">
-                        <div class="pull-right">
-                            <a class="btn btn-primary" href="#!/articles/1.html">阅读更多</a>
-                        </div>
-                    </div>
-                </div>
             </section>
         </div>
     </div>
@@ -111,7 +97,60 @@
 <script src="/resources/js/pace.min.js"></script>
 <script src="/resources/js/router.js"></script>
 <script>
-    $.Router.init();
+    $(document).ajaxStart(function () {
+        Pace.restart();
+    });
+    //                 .when('/pages/about.html', {templateUrl: '/pages/about.html'})
+    //                 .when('/pages/copyright.html', {templateUrl: '/pages/copyright.html'})
+    //                 .when('/pages/contact.html', {templateUrl: '/pages/contact.html'})
+    //                 .when('/pages/donate.html', {templateUrl: '/pages/donate.html'})
+    //                 .when('/pages/icp.html', {templateUrl: '/pages/icp.html'})
+    //                 // .when('/pages/policies/privacy.html', {templateUrl: '/pages/policies/privacy.html'})
+    //                 // .when('/pages/policies/ip.html', {templateUrl: '/pages/policies/ip.html'})
+    //                 // .when('/pages/agreement.html', {templateUrl: '/pages/agreement.html'})
+    //                 // .when('/pages/disclaimer.html', {templateUrl: '/pages/disclaimer.html'})
+    $.Router.init({
+        protocol: 'https://',
+        domain: window.location.hostname,
+        port: 443,
+        view: '.content',
+        default: '/',
+        routers: {
+            '/': {
+                method: 'get',
+                templateUrl: '/list.html',
+            },
+            '/articles/1.html': {
+                method: 'get',
+                templateUrl: '/articles/1.html',
+            }
+        }
+    });
+</script>
+<link href="/resources/plugins/syntaxhighlighter/css/shCore.css" rel="stylesheet" type="text/css"/>
+<link href="/resources/plugins/syntaxhighlighter/css/shThemeMidnight.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="/resources/plugins/syntaxhighlighter/js/shCore.js"></script>
+<script type="text/javascript" src="/resources/plugins/syntaxhighlighter/js/shBrushPlain.js"></script>
+<script type="text/javascript" src="/resources/plugins/syntaxhighlighter/js/shBrushBash.js"></script>
+<script type="text/javascript" src="/resources/plugins/syntaxhighlighter/js/shBrushJScript.js"></script>
+<script type="text/javascript" src="/resources/plugins/syntaxhighlighter/js/shBrushPhp.js"></script>
+<script type="text/javascript" src="/resources/plugins/syntaxhighlighter/js/shBrushCSharp.js"></script>
+<script type="text/javascript" src="/resources/plugins/syntaxhighlighter/js/shBrushCss.js"></script>
+<script type="text/javascript" src="/resources/plugins/syntaxhighlighter/js/shBrushCpp.js"></script>\
+<script>
+    SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+    SyntaxHighlighter.config.strings.help = '?';
+    SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+    SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+    SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+    SyntaxHighlighter.defaults['auto-links'] = false;
+    SyntaxHighlighter.defaults['pad-line-numbers'] = 4;
+    SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.defaults['wrap-lines'] = false;
+    SyntaxHighlighter.all();
+    $(document).ajaxComplete(function () {
+        setTimeout("SyntaxHighlighter.highlight();", 1000);
+    });
 </script>
 </body>
 </html>
