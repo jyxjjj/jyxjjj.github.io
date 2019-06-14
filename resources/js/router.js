@@ -20,7 +20,7 @@
         routers: {
             index: {
                 method: 'get',
-                templateUrl: '/index.php/index/Index/index.html',
+                templateUrl: '/index.html',
             }
         }
     };
