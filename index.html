@@ -10,8 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="keywords" content="龙缘博客,DESMG,BLOG,Blog,blog,龙缘科技">
     <meta name="description" content="龙缘博客,致力于最好的自己">
-    <meta name="build" content="2019-04-03 02:26:05">
-    <link rel="canonical" href="/">
+    <meta name="build" content="2019-06-14 15:53:00">
     <title>龙缘博客 - 主页</title>
     <style>
         @media (min-width: 768px) {
@@ -25,10 +24,6 @@
 
             .wrapper, .content-wrapper {
                 background-color: unset !important;
-            }
-
-            .content-header, .content {
-                background-color: #ECF0F5 !important;
             }
         }
     </style>
@@ -52,24 +47,6 @@
                 <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li class="active"><a href="/">主页</a></li>
-                        <li><a href="/about/">关于我们</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">快捷工具&nbsp;<span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">SC2TRAINER</a></li>
-                                <li><a href="#">浏览器检测</a></li>
-                            </ul>
-                        </li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">友情链接&nbsp;<span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="https://www.desmg.com/">龙缘科技</a></li>
-                                <li><a href="https://www.desmg.com/jump.php?url=https://cdw6.cc">陈铎文博客</a></li>
-                                <li><a href="https://www.desmg.com/jump.php?url=https://sc2.blizzard.cn/home">星际争霸2官方网站</a></li>
-                                <li><a href="https://www.desmg.com/jump.php?url=https://www.google.com">Google</a></li>
-                                <li><a href="https://www.desmg.com/jump.php?url=https://letsencrypt.org">Let's Encrypt</a></li>
-                            </ul>
-                        </li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">主题音乐&nbsp;<span class="caret"></span></a>
                             <ul class="dropdown-menu">
@@ -83,10 +60,15 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">站点信息&nbsp;<span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">版权声明</a></li>
-                                <li><a href="#">联系我们</a></li>
-                                <li><a href="#">捐助我们</a></li>
-                                <li><a href="#">备案信息</a></li>
+                                <li><a href="#!/pages/about.html">关于我们</a></li>
+                                <li><a href="#!/pages/copyright.html">版权声明</a></li>
+                                <li><a href="#!/pages/contact.html">联系我们</a></li>
+                                <li><a href="#!/pages/donate.html">捐助我们</a></li>
+                                <li><a href="#!/pages/icp.html">备案信息</a></li>
+                                <li><a href="#!/pages/policies.html">隐私权政策</a></li>
+                                <li><a href="#!/pages/policies.html">知识产权政策</a></li>
+                                <li><a href="#!/pages/agreement.html">服务协议</a></li>
+                                <li><a href="#!/pages/disclaimer.html">免责声明</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -96,9 +78,24 @@
     </header>
     <div class="content-wrapper">
         <div class="container">
-            <div style="margin-top: 15px;"></div>
-            <div class="box box-primary">
-            </div>
+            <section class="content-header">
+            </section>
+            <section class="content">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">测试</h3>
+                        <span class="pull-right">神林 发布于 2019-04-03</span>
+                    </div>
+                    <div class="box-body">
+                        测试文字测试文字测试文字测试文字<br/>
+                    </div>
+                    <div class="box-footer">
+                        <div class="pull-right">
+                            <a class="btn btn-primary" href="#!/articles/1.html">阅读更多</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
     <footer class="main-footer">
@@ -112,5 +109,9 @@
 <script src="/resources/js/bootstrap.min.js"></script>
 <script src="/resources/js/adminlte.min.js"></script>
 <script src="/resources/js/pace.min.js"></script>
+<script src="/resources/js/router.js"></script>
+<script>
+    $.Router.init();
+</script>
 </body>
 </html>
