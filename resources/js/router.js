@@ -1,5 +1,5 @@
 /**
- * @copyright Copyright='DESMG(www.desmg.com) All Rigths Reserved.'; QQ=773933146; Phone=18251554183; Producer=DESMG
+ * @copyright Copyright='DESMG(www.desmg.com) All Rigths Reserved.'; QQ=773933146; Telegram=jyxjjj(https://t.me/jyxjjj); Producer=DESMG
  * @version 1.0.0
  * @file BlogRouter By DESMG.
  * @license GNU General Public License v3.0
