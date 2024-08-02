@@ -105,7 +105,7 @@
             <td id="met_second"></td>
         </tr>
         <script>
-            $.desmg.countdown.initDoms($('#met_day'), $('#met_hour'), $('#met_minute'), $('#met_second'), '2023-08-13 14:17:00', false);
+            $.desmg.countdown.splitable($('#met_day'), $('#met_hour'), $('#met_minute'), $('#met_second'), '2023-08-13 14:17:00', false);
         </script>
         <tr>
             <td style="font-size: small;">Yours</td>
@@ -130,7 +130,7 @@
                 birObj.cDay = birObj.cDay < 10 ? '0' + birObj.cDay : birObj.cDay;
                 bir = `${birObj.cYear}-${birObj.cMonth}-${birObj.cDay} 13:08:00`;
             }
-            $.desmg.countdown.initDoms($('#bir_day'), $('#bir_hour'), $('#bir_minute'), $('#bir_second'), bir, true);
+            $.desmg.countdown.splitable($('#bir_day'), $('#bir_hour'), $('#bir_minute'), $('#bir_second'), bir, true);
         </script>
         <tr>
             <td style="font-size: small;">Mine</td>
@@ -149,7 +149,7 @@
             if (mybirStatus <= 0) {
                 mybir = (thedate.getFullYear() + 1) + '-12-19 10:30:00';
             }
-            $.desmg.countdown.initDoms($('#mybir_day'), $('#mybir_hour'), $('#mybir_minute'), $('#mybir_second'), mybir, true);
+            $.desmg.countdown.splitable($('#mybir_day'), $('#mybir_hour'), $('#mybir_minute'), $('#mybir_second'), mybir, true);
         </script>
         <tr>
             <td style="font-size: small;">Photo</td>
@@ -168,7 +168,7 @@
             if (photoStatus <= 0) {
                 photo = (thedate.getFullYear() + 1) + '-11-19 08:00:00';
             }
-            $.desmg.countdown.initDoms($('#photo_day'), $('#photo_hour'), $('#photo_minute'), $('#photo_second'), photo, true);
+            $.desmg.countdown.splitable($('#photo_day'), $('#photo_hour'), $('#photo_minute'), $('#photo_second'), photo, true);
         </script>
         <tr>
             <td style="font-size: small;">Marry</td>
@@ -187,7 +187,7 @@
             if (marryStatus <= 0) {
                 marry = (thedate.getFullYear() + 1) + '-12-12 13:30:00';
             }
-            $.desmg.countdown.initDoms($('#marry_day'), $('#marry_hour'), $('#marry_minute'), $('#marry_second'), marry, true);
+            $.desmg.countdown.splitable($('#marry_day'), $('#marry_hour'), $('#marry_minute'), $('#marry_second'), marry, true);
         </script>
         <tr>
             <td style="font-size: small;">Wedding</td>
