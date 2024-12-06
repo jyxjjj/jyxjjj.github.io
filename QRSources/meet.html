@@ -208,6 +208,25 @@
             }
             $.desmg.countdown.splitable($('#wedding_day'), $('#wedding_hour'), $('#wedding_minute'), $('#wedding_second'), wedding, true);
         </script>
+        <tr>
+            <td style="font-size: small;">ππ</td>
+            <td>&nbsp;</td>
+            <td id="pp_day"></td>
+            <td>.</td>
+            <td id="pp_hour"></td>
+            <td>:</td>
+            <td id="pp_minute"></td>
+            <td>:</td>
+            <td id="pp_second"></td>
+        </tr>
+        <script>
+            let pp = thedate.getFullYear() + '-11-25 08:13:00';
+            let ppStatus = detectIfOlder(thedate, pp);
+            if (ppStatus <= 0) {
+                pp = (thedate.getFullYear() + 1) + '-11-25 08:13:00';
+            }
+            $.desmg.countdown.splitable($('#pp_day'), $('#pp_hour'), $('#pp_minute'), $('#pp_second'), pp, true);
+        </script>
         </tbody>
     </table>
     <div class="lockscreen-footer">
