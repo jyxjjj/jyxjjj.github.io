@@ -1,21 +1,24 @@
-[简体中文](zh-CN.md)
+# Photography Privacy Policy
+# 照片隐私政策
 
-[English](en-US.md)
+[简体中文](zh-CN.md) 照片隐私政策
 
-[Deutsch](de-DE.md)
+[English](en-US.md) Photography Privacy Policy
 
-[Français](fr-FR.md)
+[Deutsch](de-DE.md) Fotografie-Datenschutzrichtlinie
 
-[日本語](ja-JP.md)
+[Français](fr-FR.md) Politique de confidentialité de la photographie
 
-[한국어](ko-KR.md)
+[日本語](ja-JP.md) 写真プライバシーポリシー
 
-[Русский](ru-RU.md)
+[한국어](ko-KR.md) 사진 개인정보 보호정책
 
-[Dutch](nl-NL.md)
+[Русский](ru-RU.md) Политика конфиденциальности фотографий
 
-[Italiano](it-IT.md)
+[Dutch](nl-NL.md) Fotografie Privacybeleid
 
-[Português](pt-BR.md)
+[Italiano](it-IT.md) Politica sulla privacy della fotografia
 
-[español](es-ES.md)
+[Português](pt-BR.md) Política de Privacidade de Fotografia
+
+[español](es-ES.md) Política de privacidad de fotografía
