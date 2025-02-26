@@ -1,9 +1,9 @@
-Uniquement pour partager avec des amis
+Uniquement pour le partage entre amis
 
-La formation de modèles est strictement interdite
+Strictement interdit pour la formation de modèles
 
-Les violations seront poursuivies
+Les contrevenants seront poursuivis
 
-Plus d'informations
+Pour plus d'informations sur la politique de confidentialité
 
-Veuillez consulter la [Politique de confidentialité de DESMG](https://www.desmg.com/#/policies/privacy)
+Veuillez visiter la [page de politique de confidentialité de DESMG](https://www.desmg.com/#/policies/privacy)

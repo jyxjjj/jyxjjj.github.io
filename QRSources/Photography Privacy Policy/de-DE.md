@@ -1,9 +1,9 @@
 Nur zum Teilen mit Freunden
 
-Modelltraining ist streng verboten
+Strengstens verboten für Modelltraining
 
-Verstöße werden strafrechtlich verfolgt
+Zuwiderhandlungen werden strafrechtlich verfolgt
 
-Weitere Informationen
+Für weitere Informationen zur Datenschutzrichtlinie
 
-Besuchen Sie bitte die [Datenschutzrichtlinie von DESMG](https://www.desmg.com/#/policies/privacy)
+Bitte besuchen Sie die [DESMG-Datenschutzrichtlinien-Seite](https://www.desmg.com/#/policies/privacy)
