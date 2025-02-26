@@ -1,5 +1,4 @@
-# Photography Privacy Policy
-# 照片隐私政策
+# 照片隐私政策 ( Photography Privacy Policy )
 
 [简体中文](zh-CN.md) 照片隐私政策
 
