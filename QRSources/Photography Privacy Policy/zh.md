@@ -6,5 +6,5 @@
 
 更多隐私政策信息
 
-请访问[龙缘科技隐私政策页面](https://www.desmg.com/policies/privacy)
+请访问[龙缘科技隐私政策页面](https://www.desmg.com/#/policies/privacy)
 
