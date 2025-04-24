@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Language" Content="zh-CN">
+    <meta name="author" content="神林">
+    <meta name="copyright" content="Copyright='DESMG(www.desmg.com) All Rigths Reserved.'; QQ=773933146; Producer=DESMG">
+    <meta name="generator" content="JetBrains WebStorm">
+    <meta name="applicable-device" content="pc">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#D0D0D0">
+    <meta name="description" content="OpenSSL PKI 公钥基础设施的搭建与维护（CRL, CAI, OCSP, AIA）">
+    <meta name="keywords" content="OpenSSL,PKI,公钥基础设施,搭建,维护,CRL,CAI,OCSP,AIA">
+    <meta name="build" content="2020-07-05 14:18:00">
+    <link rel="canonical" href="https://github.desmg.com/QRSources/pki.html">
+    <title>OpenSSL PKI 公钥基础设施的搭建与维护（CRL, CAI, OCSP, AIA）</title>
+    <link href="https://www.desmg.com/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://www.desmg.com/resources/jquery/js/jquery.min.js"></script>
+    <script>
+        let scale = 1 / window.devicePixelRatio;
+        $('meta[name="viewport"]').attr('content', 'initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
+    </script>
+    <style>
+        html,
+        body {
+            margin: 0 auto 0 auto;
+            width: 1080px;
+            height: 100%;
+            background-color: #D0D0D0;
+        }
+
+        p {
+            margin-bottom: 5px;
+        }
+
+        ul,
+        li {
+            list-style: none;
+        }
+
+        a:link,
+        a:hover,
+        a:focus,
+        a:active,
+        a:visited {
+            color: #444444;
+        }
+
+        .box-body>a:link,
+        .box-body>a:hover,
+        .box-body>a:focus,
+        .box-body>a:active,
+        .box-body>a:visited {
+            color: #48AEE2;
+        }
+
+        ul>a:link,
+        ul>a:hover,
+        ul>a:focus,
+        ul>a:active,
+        ul>a:visited {
+            color: #48AEE2;
+        }
+
+        li>a:link,
+        li>a:hover,
+        li>a:focus,
+        li>a:active,
+        li>a:visited {
+            color: #48AEE2;
+        }
+
+        blockquote {
+            margin: 5px;
+            padding: 0 20px;
+            border-left: 5px solid #eee;
+        }
+    </style>
+    <style>
+        .box-container {
+            margin: 64px 5% 0 5%;
+            z-index: 99999;
+            position: relative;
+        }
+
+        .box {
+            margin: 0 0 24px 0;
+            background-color: #FFFFFF;
+            border-radius: 1px;
+            box-shadow: 0 0 10px #666666;
+        }
+
+        .box-header {
+            padding: 0 0 0 10px;
+            height: 48px;
+            line-height: 48px;
+            color: #FFFFFF;
+            font-size: x-large;
+            text-align: center;
+        }
+
+        .box-header.box-red {
+            background-color: #E51C23;
+        }
+
+        .box-header.box-blue {
+            background-color: #03A9F4;
+        }
+
+        .box-header.box-amber {
+            background-color: #FFC107;
+        }
+
+        .box-header.box-purple {
+            background-color: #9C27B0;
+        }
+
+        .box-body {
+            min-height: 128px;
+            padding: 0 36px;
+        }
+
+        .red900 {
+            color: #B0120A;
+        }
+
+        .red700 {
+            color: #D01716;
+        }
+
+        .blue900 {
+            color: #01579B;
+        }
+
+        .blue500 {
+            color: #03A9F4;
+        }
+
+        .amber900 {
+            color: #FF6F00;
+        }
+
+        .amber700 {
+            color: #FFA000;
+        }
+
+        .purple500 {
+            color: #9C27B0;
+        }
+
+        .table-responsive {
+            margin: 0 auto 0 auto;
+            padding: 5px 0 5px 0;
+            width: 90%;
+        }
+
+        .table {
+            margin: 0 0 0 0;
+        }
+
+        .table td,
+        .table th {
+            border: 0;
+        }
+
+        .footer {
+            margin: 5px 0 16px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="box-container">
+        <div class="box">
+            <div class="box-header box-amber">OpenSSL PKI 公钥基础设施的搭建与维护（CRL, CAI, OCSP, AIA）</div>
+        </div>
+        <div class="box">
+            <div class="box-header box-red">未经允许禁止转载</div>
+        </div>
+        <div class="box">
+            <div class="box-header box-blue">目录</div>
+            <div class="box-body">
+                <ul>
+                    <li>
+                        <a href="#简介"><strong>简介</strong></a>
+                    </li>
+                    <li><a href="#一">一、基础知识</a>
+                        <ul>
+                            <li>（一）、概论</li>
+                            <li>（二）、根证书</li>
+                            <li>（三）、EV证书</li>
+                        </ul>
+                    </li>
+                    <li><a href="#二">二、CRL（证书吊销列表）</a></li>
+                    <li><a href="#三">三、CAI（证书颁发机构颁发者）</a></li>
+                    <li><a href="#四">四、OCSP（联机证书状态协议）</a>
+                        <ul>
+                            <li>OCSP响应器</li>
+                            <li>OCSP专用证书
+                                <ul>
+                                    <li>证书扩展</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#五">五、AIA（授权信息访问）</a></li>
+                    <li><a href="#六">六、SCT(证书透明度列表)</a></li>
+                    <li><a href="#后记">后记</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="box">
+            <div id="简介" class="box-header box-blue">简介</div>
+            <div class="box-body">
+                作者: 暗夜（QQ: <a href="http://wpa.qq.com/msgrd?uin=1444691679">1444691679</a>）<br />
+                转码: 神林（Telegram: <a href="https://t.me/jyxjjj">@jyxjjj</a>）<br />
+                修改时间: 2020-07-05<br />
+                <div class="red700">
+                    Copyright &copy; 2020<br />
+                    OpenSSL交流群(201757544) All Rights Reserved.
+                </div>
+                <div>
+                    教程环境:<br />
+                    操作系统: Windows 10 Professional 2004 19041.330<br />
+                    OpenSSL: 1.1.1f
+                </div>
+                <strong>
+                    此篇教程部分内容不面向对OpenSSL及配置文件一无所知的"小白"。<br />
+                    请了解一下最最基本的知识再来阅读。
+                </strong>
+            </div>
+        </div>
+        <div class="box">
+            <div id="一" class="box-header box-blue">一、基础知识</div>
+            <div class="box-body">
+                <h3>（一）、概论</h3>
+                <div>
+                    <div>通常情况下，CA为了确保整套证书链的可信度、各级别CA的安全，会使用由根证书签发的二级CA签发用户证书（最终实体证书）。
+                        然而有些CA会向其他公司授权证书的签发权，比如向该公司签发二级（或其他级）的CA证书，甚至允许该公司继续签发子CA。
+                        因此我们经常可以看到的证书链通常是下列三种结构: <br />
+                        <blockquote>
+                            -Root CA<br />
+                            &nbsp;-Class 2 CA<br />
+                            &nbsp;&nbsp;-Entity Certification
+                        </blockquote>
+                        <blockquote>
+                            Root CA<br />
+                            &nbsp;-Class 2 CA (Thrid Party)<br />
+                            &nbsp;&nbsp;-Entity Certification
+                        </blockquote>
+                        <blockquote>
+                            Root CA<br />
+                            &nbsp;-Class 2 CA<br />
+                            &nbsp;&nbsp;-Class 3 CA (Thrid Party)<br />
+                            &nbsp;&nbsp;&nbsp;-Entity Certification
+                        </blockquote>
+                    </div>
+                </div>
+                <strong>此篇教程将以第一种结构进行讲解。</strong>
+                <div>
+                    一个合格的CA必须有撤销（吊销）、补发此CA任何各级证书的能力，同时必须具备让操作系统或软件可以正常、正确的获取到证书状态信息的能力。<br />
+                    比如: CRL（证书吊销列表）、CAI（证书颁发机构颁发者）、OCSP（联机响应程序）、AIA（授权信息访问）、SCT（证书透明度日志）。<br />
+                    这篇教程中将会对这四种技术的实现方法进行讲解。
+                </div>
+                <div>
+                    任何组织、个人、集体必须严格管理、妥善保存直接隶属于本个体或集体的所有CA的私钥，一旦发生私钥泄露，CA必须立刻吊销该最终实体证书或CA证书。
+                </div>
+                <div>
+                    为了确保证书确实来自该CA签发，并且使证书具有特定ID（序列号可以随意指定，因此不能作为该证书的特定ID，证书指纹也可以被更改，因此也不能。）<br />
+                    CA必须确保其根证书、各级CA、最终实体证书中都包含"授权密钥标识符"和"使用者密钥标识符"这两项扩展属性。
+                </div>
+                <div>
+                    所有证书（不论是CA证书还是最终实体证书）中，"密钥用法"和"基本约束"属性必须为关键扩展。
+                </div>
+                <h3>（二）、根证书</h3>
+                <div>
+                    一个CA的根证书是最重要的，在Windows操作系统中，微软通过注册表来对根证书进行修改，例如: "密钥用法（属性）"、"扩展密钥用法（属性）"、"扩展的验证（属性）"等重要属性。<br />
+                    对于前二项都可以用证书扩展来使用，但"扩展的验证（属性）"则必须通过Windows MSC中证书管理进行手动修改才可以有。"友好名称"、"证书描述"等属性同理。<br />
+                    通常被微软信任的CA都是由Windows自动安装的，因此那些CA的根证书的属性不用"扩展"来控制，而是直接由"属性"来控制。通过"属性"控制的项可以被随时修改，而扩展则不可以。<br />
+                </div>
+                <strong>如果一个CA想要签发 EV SSL 或 EV CodeSigning 证书（即EV SSL证书或EV 代码签名证书），则其根证书必须包含"扩展的验证"属性，并且扩展的验证属性中的OID必须为经过注册、微软认可的EV证书专用OID。</strong>
+                <h3>（三）、EV证书</h3>
+                <div>
+                    根证书直接决定能否签发EV证书，而EV证书则必须符合规范。<br />
+                    比如单在V1版本扩展中"使用者"就必须包含很多项OID及其对应的值，且必须与普通OID（即O，OU，S等）的值对应。<br />
+                    如果EV证书不符合规范，那么他就不会发挥作用。
+                </div>
+            </div>
+        </div>
+        <div class="box">
+            <div id="二" class="box-header box-blue">二、CRL（证书吊销列表）</div>
+            <div class="box-body">
+                <h4>CRL全称为"证书吊销列表"，此项技术被微软推荐并且在Windows平台中其作为优先检查项。</h4>
+                CRL通常为"专用"的，即各级CA有各级CA的证书吊销列表<br />
+                且该CA签发的下级证书必须包含名为"CRL 分发点"的证书扩展属性<br />
+                该属性的值必须指向可以正常访问的地址，包括域名或IP地址<br />
+                地址必须精准指向该证书吊销列表文件
+                例如: <br />
+                <code>http://www.example.com/abc.crl</code><br />
+                <code>http://123.123.123.123/abc.crl</code><br />
+                需要注意的是该地址前必须包含使用的协议，例如HTTP、HTTPS、FTP、LDAP等。<br />
+                如果想要在签发的证书中包含该扩展，可以在配置文件中这样写:<br />
+                <code>crlDistributionPoints = URI:http://www.example.com/abc.crl</code><br />
+                其中"crlDistributionPoints"表示该扩展为CRL分发点扩展，"URI"表示后面的地址为该文件的准确位置。<br />
+                例如上述中地址写的是<br />
+                <code>"http://www.example.com/abc.crl"</code><br />
+                那么系统会精确的按照<br />
+                <code>"http://www.example.com/abc.crl"</code><br />
+                这个地址获取证书吊销列表文件。同样，一个证书可以有多个CRL地址（即多个证书吊销列表文件）<br />
+                由于一个证书吊销列表文件的大小会随着被吊销的证书越来越多而越来越大，因此许多CA都选择通过发布多个CRL文件来缓解系统获取每个吊销列表文件时的压力。<br />
+                可以通过在配置文件中这样写来指定多个CRL文件:<br />
+                <code>crlDistributionPoints.0 = URI:http://www.example.com/abc1.crl</code><br />
+                <code>crlDistributionPoints.1 = URI:http://www.example.com/abc2.crl</code><br />
+                当然，仅将CRL的扩展包含到证书证书中是不够的，CA还需要生成CRL文件并发布它。<br />
+                可以通过在OpenSSL.exe中执行如下命令来生成一个CRL列表。<br />
+                <code>ca -gencrl -crldays 有效期（日） -cert CA证书.crt -keyfile CA证书私钥.key -md 算法（SHA*、MD*等） -out 输出文件.crl -config 配置文件.cnf</code><br />
+                Tips:<br />
+                "-crldays"可以被"-crlhour"替代，替代后的有效期单位则为小时。不推荐将有效期设置的太短，一周足够。否则CA需要频繁的生成、发布最新的CRL文件。<br />
+                算法可以为"SHA1"、"SHA256"、"SHA384"、"SHA512"、"MD1"、"MD2"、"MD5"等等，有效即可。同时选择算法时也应考虑操作系统兼容性。<br />
+            </div>
+        </div>
+        <div class="box">
+            <div id="三" class="box-header box-blue">三、CAI（证书颁发机构颁发者）</div>
+            <div class="box-body">
+                <h4>CAI全称为"证书颁发机构颁发者"，它会告知操作系统当证书链不全或错误、无效的时候，从哪里可以正确的获取到该证书正确的颁发者（签发证书）。</h4>
+                当证书链不全或错误、无效时，而CAI配置错误或不存在、无法正常访问、获取文件，那么Windows就会提示警告。<br />
+                可能你会疑惑为什么你直接查看你的CA颁发的证书会显示"Windows缺少某些信息，无法验证该证书的颁发者。"错误<br />
+                但是大厂却不会。<br />
+                而为什么在安装好各级CA后却又正常了呢？<br />
+                由于CAI和OCSP会统一保存、生效在AIA扩展中，因此下文仅作概述。详情请查看AIA章节<br />
+                CAI中指定的地址可以向系统提供一个查找该证书签发者的位置。<br />
+                比如在一个四级CA体系中:
+                <blockquote>
+                    -Root CA<br />
+                    &nbsp;-Class 2 CA<br />
+                    &nbsp;&nbsp;-Class 3 CA (Thrid Party)<br />
+                    &nbsp;&nbsp;&nbsp;-Entity Certification
+                </blockquote>
+                通常操作系统仅会安装根CA，那么在该操作系统中查看最终实体证书时会因为缺少二级和三级CA而无法验证。<br />
+                而CAI会解决这个问题。<br />
+                当系统中没有安装二级、三级CA时，Windows会查找最终实体证书的AIA扩展中的CAI，并根据CAI地址获取签发者（签发证书）。<br />
+                成功获取后由于仍缺少二级CA，所以Windows会查找三级CA证书的AIA扩展中的CAI，并根据CAI地址获取签发者（签发证书）。<br />
+                在成功获取后Windows会自动安装该证书的上级证书（即签发证书），同时验证整条证书链。<br />
+                由此可见，CAI在整条证书链和公钥基础设施中的重要性。
+            </div>
+        </div>
+        <div class="box">
+            <div id="四" class="box-header box-blue">四、OCSP（联机证书状态协议）</div>
+            <div class="box-body">
+                <h4>OCSP全称为"联机证书状态协议"，它会告知操作系统或应用程序当前证书的状态是否正常（或吊销）。由于CRL的局限性和缺点，谷歌推荐这项技术，但微软对此技术并不支持。</h4>
+                <strong>请注意！此章节与CRL章节不同！此章节包含OCSP实现的重要方法和技术细节！请您务必仔细阅读！</strong><br />
+                OCSP作为被以谷歌为推广代表，谷歌浏览器为应用代表广泛"传播"的技术，其在很大程度上发挥了便捷、安全、准确、快速的功能和效果。<br />
+                OCSP在证书链、PKI体系中，承担了很重要的角色。同CRL一样，它也在证书状态检查方面发挥了重要的作用。<br />
+                与CRL不同的是，你只需要指定一个OCSP响应器地址，不需要发布任何文件等，OCSP响应器即可完成所有工作并返回结果。<br />
+                与CRL相同的是，OCSP也是"专用"的，即每个CA有每个CA的OCSP响应器。但其在技术实现和细节方面与CRL有较大差别:<br />
+                <br />
+                1. 需要专用的OCSP证书来对发送的内容和传输过程进行加密；<br />
+                2. OCSP返回的结果几乎为实时响应，除非进行设置，否则返回结果的有效期为实时；<br />
+                3. OCSP响应器收到请求后会自动完成一系列操作，无需手动发布响应结果等类的文件。<br />
+                需要注意的是，在Windows操作系统中，系统默认优先检查CRL。<br />
+                比如在同时有有效CRL和OCSP地址的代码签名证书中，我们查看使用该证书签名程序的签名状态，Windows会首先获取CRL，其次是OCSP响应结果。<br />
+                <h3>OCSP响应器</h3>
+                要实现OCSP，您需要启动一个OCSP响应服务器。OpenSSL中带有这样的功能。通过在OpenSSL中执行如下命令，您便可以启动一个OCSP响应服务器。<br />
+                但是请注意！您运行OCSP相应服务器的地址、端口必须与证书中设置的端口一致，否则系统无法检查OCSP响应结果<br />
+                <code>ocsp -index demoCA/index.txt -port 8080 -nmin 1 -rsigner oc.crt -rkey oc.key -CA CA的证书文件.crt -out 日志文件.log</code><br />
+                上述命令中<br />
+                -index 指定该CA的数据库文件位置（CA的数据库可以被多个CA使用，比如OpenSSL中所有签发的证书都被记录在index.txt文件）<br />
+                -port 指定运行的端口（可以从哪个端口获取到OCSP响应信息）<br />
+                -nmin 指定一个响应结果的有效期（分钟）<br />
+                -rsigner 指定加密（签发）响应结果的证书文件<br />
+                -rkey 则为该证书的私钥文件<br />
+                -CA指定该OCSP响应器的CA<br />
+                -out 指定OCSP响应器输出的日志文件。
+                <h3>OCSP专用证书</h3>
+                <strong>加密OCSP响应的证书必须为专用的证书！</strong><br />
+                该证书可以由根CA签发，由此来对该CA签发的所有CA的所有OCSP响应器通用。<br />
+                由于OCSP响应证书不能包含AIA（授权信息访问），CRL分发点扩展。并且AIA扩展中还包括CAI和OCSP，所以CA无法控制OCSP证书。<br />
+                因此该证书的有效期必须控制在半年以内。
+                <h4>证书扩展: </h4>
+                OCSP专用证书必须有"OCSP不撤销检查"扩展，密钥用法仅可以包含: <br />
+                <code>Digital Signature, Non-Repudiation, Key Encipherment</code><br />
+                增强型密钥用法扩展必须仅包含<code>"OCSP 签名"</code>用法，此外证书也必须为最终实体证书。<br />
+                某些情况下，为了使Windows系统兼容，此证书还必须包含"应用程序策略"扩展，策略标识符为"OCSP 签名"。
+            </div>
+        </div>
+        <div class="box">
+            <div id="五" class="box-header box-blue">五、AIA（授权信息访问）</div>
+            <div class="box-body">
+                <h4>AIA全称为"授权信息访问"，这是一个非常重要的扩展。AIA可以向系统提供该证书的CAI和OCSP地址，从而让系统验证该证书的证书链、有效性。</h4>
+
+                为了使该证书有有效的CAI和OCSP地址，您可以在配置文件中这样写:<br />
+                <code>authorityInfoAccess = OCSP;URI:http://www.example.com:8080,caIssuers;URI:http://www.example.com/abc.crt</code><br />
+                其中<br />
+                "authorityInfoAccess"表示该扩展为"授权信息访问"扩展。<br />
+                "OCSP"表示后面的URI地址为可以请求该证书有效性的OCSP响应信息的地址。<br />
+                "caIssuers"表示后面的URI地址为该证书颁发者证书的位置。
+            </div>
+        </div>
+        <div class="box">
+            <div id="六" class="box-header box-blue">六、SCT（证书透明度列表）</div>
+            <div class="box-body">
+                <h4>SCT又称"CT"或"CTL"，意为"证书透明度日志"或"证书透明度列表"，它是一项由谷歌力推的技术。该技术的出现是为了防止一些CA由于内部目的随意签发域名的证书，因此从2016年开始，所有的SSL证书必须包含有效的CT记录。</h4>
+                相信很多人试图将自己签发的证书提交到谷歌、DigiCert等大厂的CT日志服务器都会返回"无法将该证书验证到受信任的颁发机构"或者"该证书不被信任"的错误。<br />
+                由此可见，除非提交由受信任的根CA签发的SSL证书，否则大厂是拒绝签发SCT文件的。<br />
+                因此我们也只能自建CT服务器。同样谷歌也提供了应用程序。<br />
+                由于过程十分繁琐，本人也没有条件实际测试，这里就不多赘述了。<br />
+                目前仅Chrome浏览器要求SSL证书必须有有效的CT日志记录，其他浏览器暂无影响。<br />
+                并且所有EV SSL证书必须有有效的CT日志记录，即有效的SCT列表扩展。<br />
+                否则不能实现浏览器地址栏小锁效果。
+            </div>
+        </div>
+        <div class="box">
+            <div id="后记" class="box-header box-blue">后记</div>
+            <div class="box-body">
+                <div>
+                    如有错误、表述不清欢迎反馈！<br />
+                    反馈方式:<br />
+                    邮箱: <a href="mailto:1444691679@qq.com">1444691679@qq.com</a><br />
+                    此教程不定期更新，请注意变动。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        Copyright &copy; 2015-2025
+        <br />
+        <b><a href="https://www.desmg.com">DESMG</a></b> All rights reserved.
+    </div>
+</body>
+</html>

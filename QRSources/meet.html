@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Language" Content="en-US">
+    <meta name="author" content="神林">
+    <meta name="copyright" content="Copyright='DESMG(www.desmg.com) All Rigths Reserved.'; QQ=773933146; Telegram=jyxjjj(https://t.me/jyxjjj); Producer=DESMG">
+    <meta name="generator" content="JetBrains PhpStorm">
+    <meta name="applicable-device" content="pc,mobile">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#212529">
+    <meta name="description" content="与你">
+    <meta name="keywords" content="与你">
+    <meta name="build" content="2024-04-25 10:56:32">
+    <link rel="canonical" href="https://github.desmg.com/QRSources/meet.html">
+    <title>Mua~</title>
+    <link href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        a:link, a:hover, a:focus, a:active, a:visited {
+            color: #DDDDDD;
+            text-decoration: none;
+        }
+
+        .lockscreen {
+            background-color: #363F48;
+            color: #FFFFFF;
+            padding-top: 10%;
+        }
+
+        .lockscreen-wrapper {
+            margin: 0 auto;
+            max-width: 25rem;
+        }
+
+        .lockscreen-footer {
+            padding-top: 10%;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            table-layout: fixed;
+            font-size: 2rem;
+        }
+
+        thead > tr > td {
+            font-size: 1rem;
+            font-weight: 100;
+        }
+
+        table, thead, tbody, tr, td {
+            border: 0;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+    </style>
+    <script src="https://unpkg.com/jquery@3.7.1/dist/jquery.js"></script>
+    <script src="https://unpkg.com/js-calendar-converter@0.0.6/dist/js-calendar-converter.js"></script>
+    <script src="https://www.desmg.com/resources/desmg/js/countdown.js"></script>
+    <script>
+        function detectIfOlder(currentDate, inputDateTimeString) {
+            const inputDateParts = inputDateTimeString.split(/[- :]/);
+            const inputDate = new Date(
+                parseInt(inputDateParts[0]),  // 年
+                parseInt(inputDateParts[1]) - 1,  // 月
+                parseInt(inputDateParts[2]),  // 日
+                parseInt(inputDateParts[3]),  // 时
+                parseInt(inputDateParts[4]),  // 分
+                parseInt(inputDateParts[5])   // 秒
+            );
+            return inputDate > currentDate ? 1 : inputDate < currentDate ? -1 : 0;
+        }
+    </script>
+    <script>
+        let thedate = new Date();
+    </script>
+</head>
+<body class="lockscreen">
+<div class="lockscreen-wrapper">
+    <table>
+        <thead>
+        <tr>
+            <td style="font-size: small;">Type</td>
+            <td></td>
+            <td>Day</td>
+            <td></td>
+            <td>Hour</td>
+            <td></td>
+            <td>Min</td>
+            <td></td>
+            <td>Sec</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td style="font-size: small;">Meet</td>
+            <td>&nbsp;</td>
+            <td id="met_day"></td>
+            <td>.</td>
+            <td id="met_hour"></td>
+            <td>:</td>
+            <td id="met_minute"></td>
+            <td>:</td>
+            <td id="met_second"></td>
+        </tr>
+        <script>
+            $.desmg.countdown.splitable($('#met_day'), $('#met_hour'), $('#met_minute'), $('#met_second'), '2023-08-13 14:17:00', false);
+        </script>
+        <tr>
+            <td style="font-size: small;">Yours</td>
+            <td>&nbsp;</td>
+            <td id="bir_day"></td>
+            <td>.</td>
+            <td id="bir_hour"></td>
+            <td>:</td>
+            <td id="bir_minute"></td>
+            <td>:</td>
+            <td id="bir_second"></td>
+        </tr>
+        <script>
+            let birObj = calendar.lunar2solar(thedate.getFullYear(), '08', '06');
+            birObj.cMonth = birObj.cMonth < 10 ? '0' + birObj.cMonth : birObj.cMonth;
+            birObj.cDay = birObj.cDay < 10 ? '0' + birObj.cDay : birObj.cDay;
+            let bir = `${birObj.cYear}-${birObj.cMonth}-${birObj.cDay} 13:08:00`;
+            let birStatus = detectIfOlder(thedate, bir);
+            if (birStatus <= 0) {
+                birObj = calendar.lunar2solar(thedate.getFullYear() + 1, '08', '06');
+                birObj.cMonth = birObj.cMonth < 10 ? '0' + birObj.cMonth : birObj.cMonth;
+                birObj.cDay = birObj.cDay < 10 ? '0' + birObj.cDay : birObj.cDay;
+                bir = `${birObj.cYear}-${birObj.cMonth}-${birObj.cDay} 13:08:00`;
+            }
+            $.desmg.countdown.splitable($('#bir_day'), $('#bir_hour'), $('#bir_minute'), $('#bir_second'), bir, true);
+        </script>
+        <tr>
+            <td style="font-size: small;">Mine</td>
+            <td>&nbsp;</td>
+            <td id="mybir_day"></td>
+            <td>.</td>
+            <td id="mybir_hour"></td>
+            <td>:</td>
+            <td id="mybir_minute"></td>
+            <td>:</td>
+            <td id="mybir_second"></td>
+        </tr>
+        <script>
+            let mybir = thedate.getFullYear() + '-12-19 10:30:00';
+            let mybirStatus = detectIfOlder(thedate, mybir);
+            if (mybirStatus <= 0) {
+                mybir = (thedate.getFullYear() + 1) + '-12-19 10:30:00';
+            }
+            $.desmg.countdown.splitable($('#mybir_day'), $('#mybir_hour'), $('#mybir_minute'), $('#mybir_second'), mybir, true);
+        </script>
+        <tr>
+            <td style="font-size: small;">Photo</td>
+            <td>&nbsp;</td>
+            <td id="photo_day"></td>
+            <td>.</td>
+            <td id="photo_hour"></td>
+            <td>:</td>
+            <td id="photo_minute"></td>
+            <td>:</td>
+            <td id="photo_second"></td>
+        </tr>
+        <script>
+            let photo = thedate.getFullYear() + '-11-19 08:00:00';
+            let photoStatus = detectIfOlder(thedate, photo);
+            if (photoStatus <= 0) {
+                photo = (thedate.getFullYear() + 1) + '-11-19 08:00:00';
+            }
+            $.desmg.countdown.splitable($('#photo_day'), $('#photo_hour'), $('#photo_minute'), $('#photo_second'), photo, true);
+        </script>
+        <tr>
+            <td style="font-size: small;">Marry</td>
+            <td>&nbsp;</td>
+            <td id="marry_day"></td>
+            <td>.</td>
+            <td id="marry_hour"></td>
+            <td>:</td>
+            <td id="marry_minute"></td>
+            <td>:</td>
+            <td id="marry_second"></td>
+        </tr>
+        <script>
+            let marry = thedate.getFullYear() + '-12-12 13:30:00';
+            let marryStatus = detectIfOlder(thedate, marry);
+            if (marryStatus <= 0) {
+                marry = (thedate.getFullYear() + 1) + '-12-12 13:30:00';
+            }
+            $.desmg.countdown.splitable($('#marry_day'), $('#marry_hour'), $('#marry_minute'), $('#marry_second'), marry, true);
+        </script>
+        <tr>
+            <td style="font-size: small;">Wedding</td>
+            <td>&nbsp;</td>
+            <td id="wedding_day"></td>
+            <td>.</td>
+            <td id="wedding_hour"></td>
+            <td>:</td>
+            <td id="wedding_minute"></td>
+            <td>:</td>
+            <td id="wedding_second"></td>
+        </tr>
+        <script>
+            let wedding = thedate.getFullYear() + '-04-20 11:58:00';
+            let weddingStatus = detectIfOlder(thedate, wedding);
+            if (weddingStatus <= 0) {
+                wedding = (thedate.getFullYear() + 1) + '-04-20 11:58:00';
+            }
+            $.desmg.countdown.splitable($('#wedding_day'), $('#wedding_hour'), $('#wedding_minute'), $('#wedding_second'), wedding, true);
+        </script>
+        <tr>
+            <td style="font-size: small;">ππ</td>
+            <td>&nbsp;</td>
+            <td id="pp_day"></td>
+            <td>.</td>
+            <td id="pp_hour"></td>
+            <td>:</td>
+            <td id="pp_minute"></td>
+            <td>:</td>
+            <td id="pp_second"></td>
+        </tr>
+        <script>
+            let pp = thedate.getFullYear() + '-11-25 08:13:00';
+            let ppStatus = detectIfOlder(thedate, pp);
+            if (ppStatus <= 0) {
+                pp = (thedate.getFullYear() + 1) + '-11-25 08:13:00';
+            }
+            $.desmg.countdown.splitable($('#pp_day'), $('#pp_hour'), $('#pp_minute'), $('#pp_second'), pp, true);
+        </script>
+        </tbody>
+    </table>
+    <div class="lockscreen-footer">
+        <span>Copyright &copy; 2024</span>
+        <br/>
+        <span><b><a href="https://www.desmg.com">DESMG</a></b> All rights reserved.</span>
+    </div>
+</div>
+</body>
+</html>
