@@ -1,0 +1,79 @@
+<h1>【安全公告】密钥轮换通知</h1>
+<!-- more -->
+<p>各位社区成员、同事、好友：</p>
+<div>
+    <p>由于安全治理与凭据生命周期管理需要，我已开始轮换并逐步停用旧的 SSH / GPG 密钥。</p>
+
+    <p>即日起，请以我后续公开发布或单独提供的 新公钥 / 新指纹 为准。</p>
+    <p>旧密钥将已停止使用，正式废弃并撤销。</p>
+</div>
+<hr />
+<div>
+    旧 SSH 公钥：<br />
+    Base64 指纹：<br />
+    <code>SHA256:JXZSyLhLED3FNaf88ljEz1ocmKQYxaq5K4GeJ/1uVQM</code><br />
+    十六进制 指纹：<br />
+    <code>257652C8B84B103DC535A7FCF258C4CF5A1C98A418C5AAB92B819E27FD6E5503</code><br />
+    <hr />
+    新 SSH 公钥：<br />
+    Base64 指纹：<br />
+    <code>SHA256:WAWxwJexwr2bazqguywb4IJ60Lc73VX3C8dHLeRBVzE</code><br />
+    十六进制 指纹：<br />
+    <code>5805B1C097B1C2BD9B6B3AA0BB2C1BE0827AD0B73BDD55F70BC7472DE4415731</code><br />
+    <hr />
+    旧 GPG 公钥：<br />
+    Primary Key ID:<br />
+    <code>3952A032D0C4CB81A9D7B606A86F2BF9569C54D0</code><br />
+    Signing Key ID:<br />
+    <code>7E9C5103CD618E54C13436EA3B0AB158FBCFDCD7</code><br />
+    Encrrypt Key ID:<br />
+    <code>7D9BAE16FDDC17CDAE1EF1105233A7C8F833A231</code><br />
+    Authentication Key ID:<br />
+    <code>3667EC47B45CC0A03E855772B9289D34BF88C965</code><br />
+    <hr />
+    新 GPG 公钥：<br />
+    Primary Key ID:<br />
+    <code>C9F1DE0C765B4E98EACF0D81AD0957666145F8C0</code><br />
+    Signing Key ID:<br />
+    <code>DFA70DAAA678D92E60C0E994BABCAA7C9828DEE5</code><br />
+    Encrrypt Key ID:<br />
+    <code>6D026B12F8B5586E0C164A04C388A5A77286AA3E</code><br />
+    Authentication Key ID:<br />
+    <code>ED2C6E270D98C8A12FAD7E1F314421DF94D9681D</code><br />
+</div>
+<hr />
+<div>
+    <p>你可以在以下位置获取 SSH 公钥：</p>
+    <ul>
+        <li><a href="https://github.com/jyxjjj.keys">https://github.com/jyxjjj.keys</a></li>
+    </ul>
+    <p>你可以在以下位置获取 GPG 公钥：</p>
+    <ul>
+        <li><a href="https://github.com/jyxjjj.gpg">https://github.com/jyxjjj.gpg</a></li>
+        <li><a href="https://keys.openpgp.org/vks/v1/by-fingerprint/C9F1DE0C765B4E98EACF0D81AD0957666145F8C0">https://keys.openpgp.org/vks/v1/by-fingerprint/C9F1DE0C765B4E98EACF0D81AD0957666145F8C0</a></li>
+    </ul>
+</div>
+<div>
+    <p>本次变更可能影响以下场景：</p>
+    <ul>
+        <li>Git 仓库提交签名验证</li>
+        <li>邮件加密 / 签名验证</li>
+        <li>SSH 登录与自动化部署</li>
+        <li>依赖公钥指纹进行身份确认的协作流程</li>
+    </ul>
+
+    <p>请协作者 / 管理员 / 系统维护者协助完成以下事项：</p>
+    <ol>
+        <li>更新我在服务器、代码托管平台、CI/CD、JumpServer、密钥环或通讯录中的旧公钥</li>
+        <li>重新校验我后续提供的新密钥指纹</li>
+        <li>停止继续信任或分发旧公钥</li>
+        <li>如你本地缓存了我的旧公钥，请同步刷新</li>
+    </ol>
+
+    <p>重要说明：</p>
+    <ul>
+        <li>若你近期收到来自我旧密钥的签名、加密材料或访问请求，请以 新指纹核验结果 为最终依据</li>
+        <li>如发现异常登录、异常签名、未知设备使用旧密钥，建议立即暂停信任并联系我进行二次确认</li>
+        <li>若你不确定当前使用的是不是最新密钥，请不要凭印象继续信任，务必重新核对指纹</li>
+    </ul>
+</div>
