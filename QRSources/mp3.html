@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#1565c0">
+    <meta name="description" content="从相册选择视频，在设备上转换并分享 MP3 音频">
+    <title>视频转 MP3</title>
+    <style>
+        :root { color-scheme: light dark; --background: #fafafa; --surface: #fff; --text: #202124; --secondary: #616161; --primary: #1565c0; --on-primary: #fff; --border: #90a4ae; --disabled: #e0e0e0; --error: #b71c1c; }
+        @media (prefers-color-scheme: dark) {
+            :root { --background: #121212; --surface: #1e1e1e; --text: #e8eaed; --secondary: #bdbdbd; --primary: #90caf9; --on-primary: #10243a; --border: #607d8b; --disabled: #303030; --error: #ef9a9a; }
+        }
+        * { box-sizing: border-box; }
+        [hidden] { display: none !important; }
+        body { margin: 0; background: var(--background); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        header { background: var(--primary); color: var(--on-primary); padding: env(safe-area-inset-top) max(24px, env(safe-area-inset-right)) 0 max(24px, env(safe-area-inset-left)); }
+        .toolbar { max-width: 440px; min-height: 64px; margin: auto; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+        .toolbar strong { font-size: 18px; font-weight: 500; }
+        .toolbar span { font-size: 12px; }
+        main { max-width: 488px; margin: auto; padding: 32px 24px max(24px, env(safe-area-inset-bottom)); }
+        .format { color: var(--primary); font-size: 13px; font-weight: 500; letter-spacing: 2px; margin: 0 0 12px; }
+        h1 { font-size: 24px; line-height: 1.4; font-weight: 500; margin: 0 0 8px; }
+        p { color: var(--secondary); font-size: 14px; line-height: 1.6; margin: 0; }
+        .picker { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 164px; margin-top: 28px; padding: 20px; border: 1px dashed var(--border); border-radius: 4px; background: var(--surface); text-align: center; overflow-wrap: anywhere; }
+        .picker input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .picker:focus-within { outline: 3px solid var(--primary); outline-offset: 4px; }
+        .plus { color: var(--primary); font-size: 32px; line-height: 1.1; }
+        #filename { font-size: 16px; }
+        .sub { color: var(--secondary); font-size: 12px; }
+        .setting, .progress-label { display: flex; justify-content: space-between; gap: 16px; font-size: 14px; }
+        .setting { padding: 22px 0; color: var(--secondary); }
+        .setting span:last-child { color: var(--text); font-weight: 500; }
+        button { display: block; width: 100%; min-height: 48px; padding: 12px 20px; border: 0; border-radius: 4px; background: var(--primary); color: var(--on-primary); font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; }
+        button:disabled { background: var(--disabled); color: var(--secondary); cursor: default; }
+        button:focus-visible { outline: 3px solid var(--primary); outline-offset: 4px; }
+        .progress-area { margin-bottom: 20px; }
+        .progress-label { margin-bottom: 8px; }
+        #progress-detail { white-space: nowrap; font-variant-numeric: tabular-nums; }
+        progress { display: block; width: 100%; height: 6px; accent-color: var(--primary); }
+        #status { margin-top: 16px; overflow-wrap: anywhere; }
+        #status.error { color: var(--error); }
+        .result { margin-bottom: 18px; }
+        .result strong { display: block; font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+        #output-name { overflow-wrap: anywhere; }
+        footer { margin-top: 24px; text-align: center; }
+        footer p, footer a { font-size: 12px; }
+        footer a { display: inline-block; padding: 14px; color: var(--secondary); }
+    </style>
+</head>
+<body>
+    <header><div class="toolbar"><strong>视频转 MP3</strong><span>本地处理</span></div></header>
+    <main>
+        <p class="format">MP4 → MP3</p>
+        <h1>把视频变成音频</h1>
+        <p>从相册选择视频，转换后分享音频</p>
+        <label class="picker">
+            <span class="plus" aria-hidden="true">＋</span>
+            <span id="filename">从相册选择视频</span>
+            <span class="sub" id="file-note">在系统菜单中选择“照片图库”</span>
+            <input id="video" type="file" accept="video/*" aria-label="从相册选择视频">
+        </label>
+        <div class="setting"><span>输出格式</span><span>MP3</span></div>
+        <div class="progress-area" id="progress-area" hidden>
+            <div class="progress-label"><span id="progress-label">下载转换组件</span><span id="progress-detail"></span></div>
+            <progress id="progress" max="100" value="0" aria-label="处理进度"></progress>
+        </div>
+        <button id="convert" type="button" disabled>开始转换</button>
+        <section id="result" hidden aria-label="转换结果">
+            <div class="result"><strong>转换完成</strong><p id="output-name"></p></div>
+            <button id="share" type="button">分享 MP3</button>
+        </section>
+        <p id="status" role="status" aria-live="polite"></p>
+        <footer><p>视频留在你的设备上，全程无需上传</p><a href="./mp3-assets/NOTICE.txt">开源许可与源码</a></footer>
+    </main>
+    <script type="module">
+        const input = document.getElementById('video');
+        const filename = document.getElementById('filename');
+        const fileNote = document.getElementById('file-note');
+        const convert = document.getElementById('convert');
+        const share = document.getElementById('share');
+        const result = document.getElementById('result');
+        const outputName = document.getElementById('output-name');
+        const status = document.getElementById('status');
+        const progressArea = document.getElementById('progress-area');
+        const progressLabel = document.getElementById('progress-label');
+        const progressDetail = document.getElementById('progress-detail');
+        const progress = document.getElementById('progress');
+        const interfaceURL = 'https://cdnjs.cloudflare.com/ajax/libs/ffmpeg/0.12.15/esm/index.js';
+        const workerURL = 'https://cdnjs.cloudflare.com/ajax/libs/ffmpeg/0.12.15/esm/worker.js';
+        const coreURL = 'https://cdnjs.cloudflare.com/ajax/libs/ffmpeg-core/0.12.10/esm/ffmpeg-core.js';
+        const wasmURL = new URL('./mp3-assets/ffmpeg-core-0.12.10.wasm', location.href).href;
+        const wasmBytes = 32232419;
+        let selectedVideo;
+        let output;
+        let busy = false;
+
+        function showStatus(message, error = false) {
+            status.textContent = message;
+            status.classList.toggle('error', error);
+        }
+
+        function showProgress(label, value, detail = '') {
+            progressArea.hidden = false;
+            progressLabel.textContent = label;
+            progressDetail.textContent = detail;
+            if (value === null) {
+                progress.removeAttribute('value');
+            } else {
+                progress.value = value;
+            }
+        }
+
+        async function loadWasm() {
+            const cache = await caches.open('mp3-ffmpeg-0.12.10');
+            const cached = await cache.match(wasmURL);
+            if (cached) {
+                showProgress('读取已缓存组件', null);
+                return cached.blob();
+            }
+            showProgress('下载转换组件', 0, '0%');
+            showStatus('首次使用需要下载约 32 MB，完成后将保留本地缓存');
+            const response = await fetch(wasmURL);
+            if (!response.ok) throw new Error(`组件下载失败（${response.status}）`);
+            const reader = response.body.getReader();
+            const chunks = [];
+            let downloaded = 0;
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                chunks.push(value);
+                downloaded += value.byteLength;
+                const percent = Math.min(100, Math.floor(downloaded / wasmBytes * 100));
+                showProgress('下载转换组件', percent, `${percent}% · ${(downloaded / 1000000).toFixed(1)} MB`);
+            }
+            const blob = new Blob(chunks, { type: 'application/wasm' });
+            showProgress('保存组件缓存', null);
+            await cache.put(wasmURL, new Response(blob, { headers: { 'Content-Type': 'application/wasm' } }));
+            return blob;
+        }
+
+        input.addEventListener('change', () => {
+            selectedVideo = input.files[0];
+            output = undefined;
+            result.hidden = true;
+            convert.hidden = false;
+            convert.disabled = !selectedVideo || busy;
+            filename.textContent = selectedVideo ? selectedVideo.name : '从相册选择视频';
+            fileNote.textContent = selectedVideo ? `${(selectedVideo.size / 1000000).toFixed(1)} MB · 点击可重新选择` : '在系统菜单中选择“照片图库”';
+            progressArea.hidden = true;
+            showStatus('');
+        });
+
+        convert.addEventListener('click', async () => {
+            busy = true;
+            input.disabled = true;
+            convert.disabled = true;
+            let ffmpeg;
+            let wasmBlobURL;
+            let workerBlobURL;
+            let lastLog = '';
+            try {
+                if (!navigator.share || !navigator.canShare) throw new Error('当前浏览器不支持音频文件分享');
+                const wasm = await loadWasm();
+                showProgress('初始化转换器', null);
+                showStatus('请保持页面在前台，转换完成后即可分享');
+                const { FFmpeg } = await import(interfaceURL);
+                ffmpeg = new FFmpeg();
+                wasmBlobURL = URL.createObjectURL(wasm);
+                workerBlobURL = URL.createObjectURL(new Blob([`import ${JSON.stringify(workerURL)}`], { type: 'text/javascript' }));
+                ffmpeg.on('log', ({ message }) => { lastLog = message; });
+                ffmpeg.on('progress', ({ progress: fraction }) => {
+                    const percent = Math.max(0, Math.min(100, Math.round(fraction * 100)));
+                    showProgress('正在转换音频', percent, `${percent}%`);
+                });
+                await ffmpeg.load({ classWorkerURL: workerBlobURL, coreURL, wasmURL: wasmBlobURL });
+                showProgress('读取视频', null);
+                await ffmpeg.writeFile('input', new Uint8Array(await selectedVideo.arrayBuffer()));
+                showProgress('正在转换音频', 0, '0%');
+                const code = await ffmpeg.exec(['-i', 'input', '-map', '0:a:0', '-vn', '-c:a', 'libmp3lame', 'output.mp3']);
+                if (code !== 0) throw new Error(`转换失败，请确认视频包含音轨。${lastLog}`);
+                const data = await ffmpeg.readFile('output.mp3');
+                const name = selectedVideo.name.replace(/\.[^.]+$/, '') + '.mp3';
+                output = new File([data], name, { type: 'audio/mpeg' });
+                if (!navigator.canShare({ files: [output] })) throw new Error('当前浏览器无法分享 MP3 文件');
+                outputName.textContent = `${name} · ${(output.size / 1000000).toFixed(1)} MB`;
+                result.hidden = false;
+                convert.hidden = true;
+                showStatus('点击“分享 MP3”，选择要发送到的应用');
+            } catch (error) {
+                output = undefined;
+                showStatus(error.message, true);
+            } finally {
+                ffmpeg?.terminate();
+                if (wasmBlobURL) URL.revokeObjectURL(wasmBlobURL);
+                if (workerBlobURL) URL.revokeObjectURL(workerBlobURL);
+                progressArea.hidden = true;
+                busy = false;
+                input.disabled = false;
+                convert.disabled = !selectedVideo;
+            }
+        });
+
+        share.addEventListener('click', async () => {
+            share.disabled = true;
+            try {
+                await navigator.share({ files: [output] });
+                showStatus('可以再次分享，或选择另一个视频');
+            } catch (error) {
+                if (error.name === 'AbortError') showStatus('已取消分享，可以再次点击');
+                else showStatus(`分享失败：${error.message}`, true);
+            } finally {
+                share.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

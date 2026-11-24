@@ -1,0 +1,20 @@
+视频转 MP3 使用以下开源组件
+
+@ffmpeg/ffmpeg 0.12.15
+License: MIT
+Source and license: https://github.com/ffmpegwasm/ffmpeg.wasm/tree/v12.15/packages/ffmpeg
+
+@ffmpeg/core 0.12.10
+License: GPL-2.0-or-later
+License text: COPYING.GPL-2.0.txt
+The WebAssembly binary is distributed unmodified from the npm package.
+Package: https://registry.npmjs.org/@ffmpeg/core/-/core-0.12.10.tgz
+Source, bindings and build scripts: https://github.com/ffmpegwasm/ffmpeg.wasm/tree/v12.15
+Dependency sources and build configuration: https://github.com/ffmpegwasm/ffmpeg.wasm/blob/v12.15/Dockerfile
+FFmpeg 5.1.4 source: https://ffmpeg.org/releases/ffmpeg-5.1.4.tar.xz
+LAME source: https://github.com/ffmpegwasm/lame
+
+The build includes FFmpeg and libraries for x264, x265, libvpx, LAME,
+Ogg, Theora, Opus, Vorbis, libwebp, FreeType, FriBidi, HarfBuzz, libass,
+zimg and zlib. Their source locations and selected revisions are listed
+in the build configuration linked above. Each library retains its own license.
