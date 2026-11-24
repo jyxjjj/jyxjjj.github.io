@@ -73,6 +73,7 @@
         <p id="status" role="status" aria-live="polite"></p>
         <footer><p>视频留在你的设备上，全程无需上传</p><a href="./mp3-assets/NOTICE.txt">开源许可与源码</a></footer>
     </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ffmpeg/0.12.15/umd/ffmpeg.js" integrity="sha384-6gtICseWoSfROfflbGSkg1kwPTH+2SxMvyn0e3THJbNoyPxx5tzNk4EXfLIHD2iD" crossorigin="anonymous"></script>
     <script type="module">
         const input = document.getElementById('video');
         const filename = document.getElementById('filename');
@@ -86,9 +87,10 @@
         const progressLabel = document.getElementById('progress-label');
         const progressDetail = document.getElementById('progress-detail');
         const progress = document.getElementById('progress');
-        const interfaceURL = 'https://cdnjs.cloudflare.com/ajax/libs/ffmpeg/0.12.15/esm/index.js';
-        const workerURL = 'https://cdnjs.cloudflare.com/ajax/libs/ffmpeg/0.12.15/esm/worker.js';
-        const coreURL = 'https://cdnjs.cloudflare.com/ajax/libs/ffmpeg-core/0.12.10/esm/ffmpeg-core.js';
+        const workerScript = { url: 'https://cdnjs.cloudflare.com/ajax/libs/ffmpeg/0.12.15/esm/worker.js', integrity: 'sha384-JZ7yh1b5HmCuJXkNZGL9h666je28uEv66wzn87yaS9bMi8n0lsyVZz0UimGEHGef' };
+        const constScript = { url: 'https://cdnjs.cloudflare.com/ajax/libs/ffmpeg/0.12.15/esm/const.js', integrity: 'sha384-6vDSlGIJfqCnQcg4hjFKj9R+LCxAEPU3tJeHV7nmrAhusI63XIuxsDhcw1/QIv21' };
+        const errorsScript = { url: 'https://cdnjs.cloudflare.com/ajax/libs/ffmpeg/0.12.15/esm/errors.js', integrity: 'sha384-WRM2DF0pbEs4S/rvSjG/3pjuy9TQBIQqH/yusLQrZzAinEIQucUuhgxXEdcxddCi' };
+        const coreScript = { url: 'https://cdnjs.cloudflare.com/ajax/libs/ffmpeg-core/0.12.10/esm/ffmpeg-core.js', integrity: 'sha384-9KlAmgHu5wDqdgQvFhQGZOtKdCwGcMppDhM/kBkUpZ5LS7KGuAHbE+NgtJQEf84i' };
         const wasmURL = new URL('./mp3-assets/ffmpeg-core-0.12.10.wasm', location.href).href;
         const wasmBytes = 32232419;
         let selectedVideo;
@@ -111,12 +113,26 @@
             }
         }
 
+        async function loadModule(resource, moduleURLs, imports = {}) {
+            const response = await fetch(resource.url, { integrity: resource.integrity });
+            if (!response.ok) throw new Error(`转换组件加载失败（${response.status}）`);
+            let source = await response.text();
+            for (const [path, url] of Object.entries(imports)) {
+                source = source.replaceAll(JSON.stringify(path), JSON.stringify(url));
+            }
+            const url = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
+            moduleURLs.push(url);
+            return url;
+        }
+
         async function loadWasm() {
             const cache = await caches.open('mp3-ffmpeg-0.12.10');
             const cached = await cache.match(wasmURL);
             if (cached) {
                 showProgress('读取已缓存组件', null);
-                return cached.blob();
+                const blob = await cached.blob();
+                if (blob.size !== wasmBytes) throw new Error('缓存组件大小不匹配');
+                return blob;
             }
             showProgress('下载转换组件', 0, '0%');
             showStatus('首次使用需要下载约 32 MB，完成后将保留本地缓存');
@@ -133,6 +149,7 @@
                 const percent = Math.min(100, Math.floor(downloaded / wasmBytes * 100));
                 showProgress('下载转换组件', percent, `${percent}% · ${(downloaded / 1000000).toFixed(1)} MB`);
             }
+            if (downloaded !== wasmBytes) throw new Error('下载组件大小不匹配');
             const blob = new Blob(chunks, { type: 'application/wasm' });
             showProgress('保存组件缓存', null);
             await cache.put(wasmURL, new Response(blob, { headers: { 'Content-Type': 'application/wasm' } }));
@@ -157,23 +174,30 @@
             convert.disabled = true;
             let ffmpeg;
             let wasmBlobURL;
-            let workerBlobURL;
+            const moduleURLs = [];
             let lastLog = '';
             try {
                 if (!navigator.share || !navigator.canShare) throw new Error('当前浏览器不支持音频文件分享');
                 const wasm = await loadWasm();
                 showProgress('初始化转换器', null);
                 showStatus('请保持页面在前台，转换完成后即可分享');
-                const { FFmpeg } = await import(interfaceURL);
+                if (!window.FFmpegWASM) throw new Error('转换组件加载失败，请检查网络');
+                const { FFmpeg } = window.FFmpegWASM;
                 ffmpeg = new FFmpeg();
                 wasmBlobURL = URL.createObjectURL(wasm);
-                workerBlobURL = URL.createObjectURL(new Blob([`import ${JSON.stringify(workerURL)}`], { type: 'text/javascript' }));
+                const constBlobURL = await loadModule(constScript, moduleURLs);
+                const errorsBlobURL = await loadModule(errorsScript, moduleURLs);
+                const workerBlobURL = await loadModule(workerScript, moduleURLs, {
+                    './const.js': constBlobURL,
+                    './errors.js': errorsBlobURL
+                });
+                const coreBlobURL = await loadModule(coreScript, moduleURLs);
                 ffmpeg.on('log', ({ message }) => { lastLog = message; });
                 ffmpeg.on('progress', ({ progress: fraction }) => {
                     const percent = Math.max(0, Math.min(100, Math.round(fraction * 100)));
                     showProgress('正在转换音频', percent, `${percent}%`);
                 });
-                await ffmpeg.load({ classWorkerURL: workerBlobURL, coreURL, wasmURL: wasmBlobURL });
+                await ffmpeg.load({ classWorkerURL: workerBlobURL, coreURL: coreBlobURL, wasmURL: wasmBlobURL });
                 showProgress('读取视频', null);
                 await ffmpeg.writeFile('input', new Uint8Array(await selectedVideo.arrayBuffer()));
                 showProgress('正在转换音频', 0, '0%');
@@ -193,7 +217,7 @@
             } finally {
                 ffmpeg?.terminate();
                 if (wasmBlobURL) URL.revokeObjectURL(wasmBlobURL);
-                if (workerBlobURL) URL.revokeObjectURL(workerBlobURL);
+                moduleURLs.forEach(url => URL.revokeObjectURL(url));
                 progressArea.hidden = true;
                 busy = false;
                 input.disabled = false;
