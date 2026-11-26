@@ -92,7 +92,7 @@
         const errorsScript = { url: 'https://cdnjs.cloudflare.com/ajax/libs/ffmpeg/0.12.15/esm/errors.js', integrity: 'sha384-WRM2DF0pbEs4S/rvSjG/3pjuy9TQBIQqH/yusLQrZzAinEIQucUuhgxXEdcxddCi' };
         const coreScript = { url: 'https://cdnjs.cloudflare.com/ajax/libs/ffmpeg-core/0.12.10/esm/ffmpeg-core.js', integrity: 'sha384-9KlAmgHu5wDqdgQvFhQGZOtKdCwGcMppDhM/kBkUpZ5LS7KGuAHbE+NgtJQEf84i' };
         const wasmURL = new URL('./mp3-assets/ffmpeg-core-0.12.10.wasm', location.href).href;
-        const wasmBytes = 32232419;
+        const wasmBytes = 1440335;
         let selectedVideo;
         let output;
         let busy = false;
@@ -126,7 +126,8 @@
         }
 
         async function loadWasm() {
-            const cache = await caches.open('mp3-ffmpeg-0.12.10');
+            await caches.delete('mp3-ffmpeg-0.12.10');
+            const cache = await caches.open('mp3-ffmpeg-audio-0.12.10');
             const cached = await cache.match(wasmURL);
             if (cached) {
                 showProgress('读取已缓存组件', null);
@@ -135,8 +136,8 @@
                 return blob;
             }
             showProgress('下载转换组件', 0, '0%');
-            showStatus('首次使用需要下载约 32 MB，完成后将保留本地缓存');
-            const response = await fetch(wasmURL);
+            showStatus('首次使用需要下载约 1.44 MB，完成后将保留本地缓存');
+            const response = await fetch(wasmURL, { cache: 'reload' });
             if (!response.ok) throw new Error(`组件下载失败（${response.status}）`);
             const reader = response.body.getReader();
             const chunks = [];

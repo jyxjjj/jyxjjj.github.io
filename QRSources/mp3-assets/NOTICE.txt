@@ -4,17 +4,28 @@
 License: MIT
 Source and license: https://github.com/ffmpegwasm/ffmpeg.wasm/tree/v12.15/packages/ffmpeg
 
-@ffmpeg/core 0.12.10
+Custom audio build of @ffmpeg/core 0.12.10
 License: GPL-2.0-or-later
 License text: COPYING.GPL-2.0.txt
-The WebAssembly binary is distributed unmodified from the npm package.
-Package: https://registry.npmjs.org/@ffmpeg/core/-/core-0.12.10.tgz
-Source, bindings and build scripts: https://github.com/ffmpegwasm/ffmpeg.wasm/tree/v12.15
-Dependency sources and build configuration: https://github.com/ffmpegwasm/ffmpeg.wasm/blob/v12.15/Dockerfile
-FFmpeg 5.1.4 source: https://ffmpeg.org/releases/ffmpeg-5.1.4.tar.xz
-LAME source: https://github.com/ffmpegwasm/lame
+Source and bindings: https://github.com/ffmpegwasm/ffmpeg.wasm/tree/71aa99d37c02a7b4c435275ca9ef50e612f6efa1
+FFmpeg 5.1.4 source: https://github.com/FFmpeg/FFmpeg/tree/4729204c17f756e186d622060088371d10b34f7e
+LAME 3.100 source: https://github.com/ffmpegwasm/lame/tree/2badea1974ae36cb8312afe99cff1e6b3b5decee
+Emscripten 3.1.40: https://github.com/emscripten-core/emsdk/tree/3.1.40
+Custom build configuration, source changes and loader compatibility mapping:
+source/build.sh.md
+source/align-abi.mjs.md
 
-The build includes FFmpeg and libraries for x264, x265, libvpx, LAME,
-Ogg, Theora, Opus, Vorbis, libwebp, FreeType, FriBidi, HarfBuzz, libass,
-zimg and zlib. Their source locations and selected revisions are listed
-in the build configuration linked above. Each library retains its own license.
+This build includes FFmpeg and LAME. Each retains its own license.
+It decodes AAC, ALAC, FLAC and PCM audio and encodes AAC and MP3.
+Video streams are discarded during audio extraction.
+The WebAssembly binary is compatible with the pinned CDN core loader for
+the page's conversion command. The ffprobe API is not included.
+
+Build with Emscripten 3.1.40 activated, Node.js, Git, curl, GNU make and
+pkg-config available. Restore the code blocks in source/build.sh.md and
+source/align-abi.mjs.md as build.sh and align-abi.mjs in the same directory.
+From an empty working directory run bash with the path to build.sh.
+The output is ffmpeg-core-audio.wasm, distributed as ffmpeg-core-0.12.10.wasm.
+
+Distributed binary size: 1440335 bytes
+SHA-256: ce7736bc3b55695c11f13545768a412f4b8a5bc6b790eb7b11af626cd06cb3d6
